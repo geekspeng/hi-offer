@@ -1,5 +1,7 @@
 import { app, BrowserWindow } from 'electron'
 import { join } from 'path'
+import { registerIPC, cleanupIPC } from './ipc'
+import { closeDatabase } from './storage/database'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -25,6 +27,8 @@ function createWindow(): void {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+
+  registerIPC(mainWindow)
 }
 
 app.whenReady().then(() => {
@@ -35,6 +39,11 @@ app.whenReady().then(() => {
       createWindow()
     }
   })
+})
+
+app.on('before-quit', async () => {
+  await cleanupIPC()
+  closeDatabase()
 })
 
 app.on('window-all-closed', () => {
