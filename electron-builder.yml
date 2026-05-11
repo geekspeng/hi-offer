@@ -1,0 +1,26 @@
+appId: com.hi-offer.app
+productName: Hi-Offer
+directories:
+  buildResources: resources
+files:
+  - out/**/*
+  - "!out/**/tests/**/*"
+mac:
+  target:
+    - target: dmg
+      arch:
+        - arm64
+        - x64
+  category: public.app-category.education
+  hardenedRuntime: true
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  artifactName: "${name}-${version}-setup.${ext}"
+linux:
+  target:
+    - AppImage
+    - deb
+  category: Education
