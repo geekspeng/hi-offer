@@ -8,6 +8,7 @@ export default defineConfig({
     }
   },
   test: {
-    setupFiles: ['src/renderer/src/test-setup.ts']
+    setupFiles: ['src/renderer/src/test-setup.ts'],
+    exclude: ['src/test/e2e/**', '**/node_modules/**']
   }
 })
