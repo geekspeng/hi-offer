@@ -1,5 +1,6 @@
 import { InterviewContext, InterviewEvent, InterviewPhase } from './types'
 import { Turn } from '../../shared/types'
+import { randomUUID } from 'crypto'
 
 export class InterviewStateMachine {
   constructor(private ctx: InterviewContext) {}
@@ -183,7 +184,7 @@ export class InterviewStateMachine {
 
   private makeTurn(role: 'ai' | 'user', content: string): Turn {
     return {
-      id: `turn-${this.ctx.turns.length + 1}`,
+      id: randomUUID(),
       sessionId: this.ctx.sessionId,
       role,
       content,

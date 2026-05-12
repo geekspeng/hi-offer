@@ -100,10 +100,17 @@ export class InterviewEngine {
     const question = lastAiTurn?.content ?? ''
     const turnId = this.findLastUserTurn()?.id ?? ''
 
-    Promise.all([
-      this.evaluateAnswer(question, transcribedText, turnId),
-      this.generateAndSpeakNext()
-    ]).catch((err) => {
+    // If all questions have been asked, skip generateAndSpeakNext to avoid
+    // a race where it also creates a turn with the same ID as handleEvaluationComplete
+    const allQuestionsAsked = ctx.currentQuestionIndex >= ctx.config.questionCount
+
+    const tasks = [
+      this.evaluateAnswer(question, transcribedText, turnId)
+    ]
+    if (!allQuestionsAsked) {
+      tasks.push(this.generateAndSpeakNext())
+    }
+    Promise.all(tasks).catch((err) => {
       console.error('[InterviewEngine] Parallel eval+next error:', err)
     })
   }
