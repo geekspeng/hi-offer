@@ -17,7 +17,8 @@ if (typeof window !== 'undefined') {
     startServices: vi.fn(),
     stopServices: vi.fn(),
     getConfig: vi.fn(),
-    setConfig: vi.fn()
+    setConfig: vi.fn(),
+    testLLM: vi.fn()
   }
 
   Object.defineProperty(window, 'api', {

@@ -25,6 +25,7 @@ describe('SettingsPage', () => {
     cleanup()
     vi.mocked(window.api.getConfig).mockResolvedValue(defaultLLMConfig)
     vi.mocked(window.api.setConfig).mockResolvedValue(undefined)
+    vi.mocked(window.api.testLLM).mockResolvedValue({ success: true })
   })
 
   afterEach(() => {
@@ -96,15 +97,6 @@ describe('SettingsPage', () => {
     expect(window.api.setConfig).toHaveBeenCalledWith(defaultLLMConfig)
   })
 
-  it('calls window.api.getConfig on cancel/reset', async () => {
-    renderSettings()
-    await screen.findByText('LLM 设置')
-
-    await userEvent.click(screen.getByText('重置'))
-
-    expect(window.api.getConfig).toHaveBeenCalled()
-  })
-
   it('shows success message after save', async () => {
     renderSettings()
     await screen.findByText('LLM 设置')
@@ -113,5 +105,42 @@ describe('SettingsPage', () => {
     await screen.findByText('保存成功')
 
     expect(screen.getByText('保存成功')).toBeInTheDocument()
+  })
+
+  it('calls window.api.testLLM on test button click', async () => {
+    renderSettings()
+    await screen.findByText('LLM 设置')
+
+    await userEvent.click(screen.getByText('测试连接'))
+
+    expect(window.api.testLLM).toHaveBeenCalled()
+  })
+
+  it('shows 连接成功 when test succeeds', async () => {
+    renderSettings()
+    await screen.findByText('LLM 设置')
+
+    await userEvent.click(screen.getByText('测试连接'))
+    await screen.findByText('连接成功')
+
+    expect(screen.getByText('连接成功')).toBeInTheDocument()
+  })
+
+  it('shows 连接失败 + error message when test fails', async () => {
+    vi.mocked(window.api.testLLM).mockResolvedValue({ success: false, error: 'ECONNREFUSED' })
+    renderSettings()
+    await screen.findByText('LLM 设置')
+
+    await userEvent.click(screen.getByText('测试连接'))
+    await screen.findByText('连接失败：ECONNREFUSED')
+
+    expect(screen.getByText('连接失败：ECONNREFUSED')).toBeInTheDocument()
+  })
+
+  it('renders 测试连接 button', async () => {
+    renderSettings()
+    await screen.findByText('LLM 设置')
+
+    expect(screen.getByText('测试连接')).toBeInTheDocument()
   })
 })

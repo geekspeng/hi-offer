@@ -76,6 +76,19 @@ export function registerIPC(win: BrowserWindow): void {
     const db = getDatabase()
     new ConfigRepository(db).saveLLMConfig(config)
   })
+
+  // === LLM Test ===
+  ipcMain.handle('llm:test', async () => {
+    const db = getDatabase()
+    const config = new ConfigRepository(db).getLLMConfig()
+    const llm = createLLMBackend(config)
+    try {
+      await llm.chat([{ role: 'user', content: 'hi' }], () => {})
+      return { success: true }
+    } catch (err: any) {
+      return { success: false, error: err?.message ?? '连接失败' }
+    }
+  })
 }
 
 export async function cleanupIPC(): Promise<void> {

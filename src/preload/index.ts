@@ -29,7 +29,10 @@ const api = {
 
   // Configuration
   getConfig: () => ipcRenderer.invoke('config:get') as Promise<LLMConfig>,
-  setConfig: (config: LLMConfig) => ipcRenderer.invoke('config:set', config)
+  setConfig: (config: LLMConfig) => ipcRenderer.invoke('config:set', config),
+
+  // LLM
+  testLLM: () => ipcRenderer.invoke('llm:test') as Promise<{ success: boolean; error?: string }>
 }
 
 contextBridge.exposeInMainWorld('api', api)

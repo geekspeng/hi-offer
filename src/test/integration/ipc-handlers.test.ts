@@ -16,6 +16,7 @@ import {
 } from '../../main/storage/repositories'
 import { InterviewConfig, Report } from '../../shared/types'
 import { getDatabase } from '../../main/storage/database'
+import { createLLMBackend } from '../../main/llm/llm-factory'
 
 vi.mock('../../main/storage/database', () => ({
   getDatabase: vi.fn()
@@ -179,6 +180,59 @@ describe('IPC Handlers - Repository 层验证', () => {
       const result = configRepo.getLLMConfig()
       expect(result.provider).toBe(original.provider)
       expect(result.ollamaModel).toBe('qwen2.5:14b')
+    })
+  })
+
+  describe('llm:test 业务逻辑', () => {
+    it('chat 成功时返回 { success: true }', async () => {
+      vi.doMock('../../main/llm/llm-factory', () => ({
+        createLLMBackend: () => ({
+          async chat() { return 'ok' },
+          async chatJSON() { return {} }
+        })
+      }))
+
+      const { createLLMBackend: mockCreate } = await import('../../main/llm/llm-factory')
+      const configRepo = new ConfigRepository(getDatabase())
+      const config = configRepo.getLLMConfig()
+      const llm = mockCreate(config)
+
+      let result: { success: boolean; error?: string }
+      try {
+        await llm.chat([{ role: 'user', content: 'hi' }], () => {})
+        result = { success: true }
+      } catch (err: any) {
+        result = { success: false, error: err?.message ?? '连接失败' }
+      }
+
+      expect(result.success).toBe(true)
+      vi.doUnmock('../../main/llm/llm-factory')
+    })
+
+    it('chat 失败时返回 { success: false, error }', async () => {
+      vi.doMock('../../main/llm/llm-factory', () => ({
+        createLLMBackend: () => ({
+          async chat() { throw new Error('ECONNREFUSED') },
+          async chatJSON() { return {} }
+        })
+      }))
+
+      const { createLLMBackend: mockCreate } = await import('../../main/llm/llm-factory')
+      const configRepo = new ConfigRepository(getDatabase())
+      const config = configRepo.getLLMConfig()
+      const llm = mockCreate(config)
+
+      let result: { success: boolean; error?: string }
+      try {
+        await llm.chat([{ role: 'user', content: 'hi' }], () => {})
+        result = { success: true }
+      } catch (err: any) {
+        result = { success: false, error: err?.message ?? '连接失败' }
+      }
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('ECONNREFUSED')
+      vi.doUnmock('../../main/llm/llm-factory')
     })
   })
 })

@@ -26,6 +26,8 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+  const [testing, setTesting] = useState(false)
+  const [testResult, setTestResult] = useState<{ success: boolean; error?: string } | null>(null)
 
   useEffect(() => {
     window.api.getConfig().then((cfg) => {
@@ -52,12 +54,17 @@ export default function SettingsPage() {
     }
   }
 
-  const handleCancel = () => {
-    window.api.getConfig().then((cfg) => {
-      setConfig(cfg ?? DEFAULT_CONFIG)
-      setSaved(false)
-      setError('')
-    })
+  const handleTest = async () => {
+    setTesting(true)
+    setTestResult(null)
+    try {
+      const result = await window.api.testLLM()
+      setTestResult(result)
+    } catch (e: any) {
+      setTestResult({ success: false, error: e?.message ?? '测试失败' })
+    } finally {
+      setTesting(false)
+    }
   }
 
   const updateField = <K extends keyof LLMConfig>(key: K, value: LLMConfig[K]) => {
@@ -255,19 +262,20 @@ export default function SettingsPage() {
               {saving ? '保存中...' : '保存'}
             </button>
             <button
-              onClick={handleCancel}
+              onClick={handleTest}
+              disabled={testing}
               style={{
                 flex: 1,
                 padding: '10px 0',
                 backgroundColor: '#fff',
-                color: '#333',
+                color: testing ? '#94a3b8' : '#2563eb',
                 border: '1px solid #e2e8f0',
                 borderRadius: 6,
-                cursor: 'pointer',
+                cursor: testing ? 'not-allowed' : 'pointer',
                 fontSize: 14
               }}
             >
-              重置
+              {testing ? '测试中...' : '测试连接'}
             </button>
           </div>
 
@@ -276,6 +284,11 @@ export default function SettingsPage() {
           )}
           {error && (
             <div style={{ color: '#ef4444', fontSize: 14 }}>{error}</div>
+          )}
+          {testResult && (
+            <div style={{ color: testResult.success ? '#22c55e' : '#ef4444', fontSize: 14 }}>
+              {testResult.success ? '连接成功' : `连接失败：${testResult.error}`}
+            </div>
           )}
         </>
       )}

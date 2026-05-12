@@ -82,7 +82,13 @@ const MOCK_INIT_SCRIPT = `
     startServices: async function() {},
     stopServices: async function() {},
     getConfig: async function() { return {}; },
-    setConfig: async function(cfg) {}
+    setConfig: async function(cfg) {},
+    testLLM: async function() {
+      if (window.__mockOverrides.testLLM) {
+        return window.__mockOverrides.testLLM();
+      }
+      return { success: true };
+    }
   };
 })();
 `
