@@ -284,6 +284,30 @@ describe('InterviewStateMachine', () => {
     })
   })
 
+  // --- turn ID uniqueness ---
+  describe('turn ID uniqueness', () => {
+    it('generates UUID-format turn IDs (not sequential)', () => {
+      const sm = new InterviewStateMachine(makeContext({ phase: 'intro', sessionId: 's1' }))
+      const result = sm.transition({ type: 'AI_FINISHED_SPEAKING', text: 'Hello' })
+
+      const turnId = result.turns[0].id
+      // UUID v4 format: 8-4-4-4-12 hex chars
+      expect(turnId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
+    })
+
+    it('generates unique IDs across multiple turns within a session', () => {
+      const sm = new InterviewStateMachine(makeContext({ phase: 'intro', sessionId: 's1' }))
+
+      const r1 = sm.transition({ type: 'AI_FINISHED_SPEAKING', text: 'Intro' })
+      const r2 = sm.transition({ type: 'AI_FINISHED_SPEAKING', text: 'Q1' })
+      const r3 = sm.transition({ type: 'USER_FINISHED_SPEAKING', text: 'A1' })
+
+      const ids = [...r3.turns].map((t) => t.id)
+      const uniqueIds = new Set(ids)
+      expect(uniqueIds.size).toBe(ids.length)
+    })
+  })
+
   // --- immutable transitions ---
   describe('immutability', () => {
     it('returns a new context object (does not mutate original)', () => {

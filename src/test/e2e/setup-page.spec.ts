@@ -51,4 +51,41 @@ test.describe('SetupPage E2E', () => {
     await page.getByRole('button', { name: '45分钟' }).click()
     await expect(page.getByText(/预计 13 道题/)).toBeVisible()
   })
+
+  test('点击"开始面试"调用 window.api.startInterview 并传递正确配置', async ({ page }) => {
+    await page.evaluate(() => {
+      ;(window as any).__capturedStartConfig = null
+      ;(window as any).__mockOverrides.startInterview = (cfg: any) => {
+        ;(window as any).__capturedStartConfig = cfg
+      }
+    })
+    await page.getByRole('button', { name: '开始面试' }).click()
+    const cfg = await page.evaluate(() => (window as any).__capturedStartConfig)
+    expect(cfg).toEqual({
+      jobId: 'frontend',
+      difficulty: 'mid',
+      duration: 30,
+      questionCount: 9
+    })
+  })
+
+  test('选择不同配置后点击"开始面试"传递正确的配置', async ({ page }) => {
+    await page.getByRole('button', { name: '后端' }).click()
+    await page.getByRole('button', { name: '高级' }).click()
+    await page.getByRole('button', { name: '45分钟' }).click()
+    await page.evaluate(() => {
+      ;(window as any).__capturedStartConfig = null
+      ;(window as any).__mockOverrides.startInterview = (cfg: any) => {
+        ;(window as any).__capturedStartConfig = cfg
+      }
+    })
+    await page.getByRole('button', { name: '开始面试' }).click()
+    const cfg = await page.evaluate(() => (window as any).__capturedStartConfig)
+    expect(cfg).toEqual({
+      jobId: 'backend',
+      difficulty: 'senior',
+      duration: 45,
+      questionCount: 13
+    })
+  })
 })

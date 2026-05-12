@@ -81,8 +81,27 @@ const MOCK_INIT_SCRIPT = `
     checkServices: async function() { return {}; },
     startServices: async function() {},
     stopServices: async function() {},
-    getConfig: async function() { return {}; },
-    setConfig: async function(cfg) {},
+    getConfig: async function() {
+      if (window.__mockOverrides.getConfig) {
+        return window.__mockOverrides.getConfig();
+      }
+      return {
+        provider: 'ollama',
+        ollamaModel: '',
+        openaiApiKey: '',
+        openaiModel: 'gpt-4o',
+        claudeApiKey: '',
+        claudeModel: 'claude-sonnet-4-20250514',
+        customEndpoint: '',
+        customApiKey: '',
+        customModel: ''
+      };
+    },
+    setConfig: async function(cfg) {
+      if (window.__mockOverrides.setConfig) {
+        return window.__mockOverrides.setConfig(cfg);
+      }
+    },
     testLLM: async function() {
       if (window.__mockOverrides.testLLM) {
         return window.__mockOverrides.testLLM();
