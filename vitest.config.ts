@@ -6,5 +6,8 @@ export default defineConfig({
     alias: {
       'better-sqlite3': resolve(__dirname, 'src/test/mocks/better-sqlite3.ts')
     }
+  },
+  test: {
+    setupFiles: ['src/renderer/src/test-setup.ts']
   }
 })
