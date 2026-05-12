@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { BrowserRouter, Routes, Route, NavLink, useNavigate } from 'react-router-dom'
+import { HashRouter, Routes, Route, NavLink, useNavigate } from 'react-router-dom'
 import SetupPage from './pages/SetupPage'
 import InterviewPage from './pages/InterviewPage'
 import ReportPage from './pages/ReportPage'
@@ -8,6 +8,10 @@ import './styles.css'
 
 function AppRoutes(): JSX.Element {
   const navigate = useNavigate()
+
+  const handleStartInterview = useCallback(() => {
+    navigate('/interview')
+  }, [navigate])
 
   const handleStopInterview = useCallback(async () => {
     await window.api.stopInterview()
@@ -35,7 +39,7 @@ function AppRoutes(): JSX.Element {
       </aside>
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<SetupPage />} />
+          <Route path="/" element={<SetupPage onStart={handleStartInterview} />} />
           <Route path="/interview" element={<InterviewPage onStop={handleStopInterview} />} />
           <Route path="/report" element={<ReportPage />} />
           <Route path="/settings" element={<SettingsPage />} />
@@ -47,9 +51,9 @@ function AppRoutes(): JSX.Element {
 
 function App(): JSX.Element {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <AppRoutes />
-    </BrowserRouter>
+    </HashRouter>
   )
 }
 
