@@ -19,6 +19,7 @@ win:
       arch:
         - x64
   artifactName: "${name}-${version}-setup.${ext}"
+  signAndEditExecutable: false
 linux:
   target:
     - AppImage
