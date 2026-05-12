@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, NavLink, useNavigate } from 'react-router
 import SetupPage from './pages/SetupPage'
 import InterviewPage from './pages/InterviewPage'
 import ReportPage from './pages/ReportPage'
+import SettingsPage from './pages/SettingsPage'
 import './styles.css'
 
 function AppRoutes(): JSX.Element {
@@ -27,6 +28,9 @@ function AppRoutes(): JSX.Element {
           <NavLink to="/report" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`}>
             报告
           </NavLink>
+          <NavLink to="/settings" className={({ isActive }) => `sidebar-item${isActive ? ' active' : ''}`}>
+            设置
+          </NavLink>
         </nav>
       </aside>
       <main className="main-content">
@@ -34,6 +38,7 @@ function AppRoutes(): JSX.Element {
           <Route path="/" element={<SetupPage />} />
           <Route path="/interview" element={<InterviewPage onStop={handleStopInterview} />} />
           <Route path="/report" element={<ReportPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>
     </div>
