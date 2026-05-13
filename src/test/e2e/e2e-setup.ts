@@ -13,7 +13,8 @@ import { test as base, Page } from '@playwright/test'
 // 全局共享的 mock 状态，供测试和 initScript 共同访问
 export const mockState: Record<string, any[]> = {
   'onInterviewState': [],
-  'onTurn': []
+  'onTurn': [],
+  'onAiChunk': []
 }
 
 export const mockOverrides: Record<string, any> = {}
@@ -44,7 +45,7 @@ const MOCK_INIT_SCRIPT = `
 (function() {
   if (window.__apiInjected) return;
   window.__apiInjected = true;
-  window.__mockState = { onInterviewState: [], onTurn: [] };
+  window.__mockState = { onInterviewState: [], onTurn: [], onAiChunk: [] };
   window.__mockOverrides = {};
   window.api = {
     startInterview: async function(cfg) {
@@ -71,6 +72,14 @@ const MOCK_INIT_SCRIPT = `
         if (idx !== -1) window.__mockState.onTurn.splice(idx, 1);
       };
     },
+    onAiChunk: function(cb) {
+      window.__mockState.onAiChunk.push(cb);
+      return function() {
+        var idx = window.__mockState.onAiChunk.indexOf(cb);
+        if (idx !== -1) window.__mockState.onAiChunk.splice(idx, 1);
+      };
+    },
+    testUserFinishedSpeaking: async function() {},
     getReport: async function(sessionId) {
       if (window.__mockOverrides.getReport) {
         return window.__mockOverrides.getReport(sessionId);

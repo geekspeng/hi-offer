@@ -9,6 +9,6 @@ export default defineConfig({
   },
   test: {
     setupFiles: ['src/renderer/src/test-setup.ts'],
-    exclude: ['src/test/e2e/**', '**/node_modules/**']
+    exclude: ['src/test/e2e/**', 'src/test/e2e-electron/**', '**/node_modules/**']
   }
 })
