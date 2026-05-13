@@ -4,7 +4,7 @@ import { applyInitScript } from './e2e-setup'
 test.describe('SettingsPage E2E', () => {
   test.beforeEach(async ({ page }) => {
     await applyInitScript(page)
-    await page.goto('/settings')
+    await page.goto('/#/settings')
   })
 
   test('页面加载后显示 LLM 设置标题和 Provider 按钮', async ({ page }) => {

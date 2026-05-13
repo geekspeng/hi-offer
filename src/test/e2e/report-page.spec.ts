@@ -31,7 +31,7 @@ async function withMockReport(page: Page, report: any, url: string) {
 
 test.describe('ReportPage E2E', () => {
   test.beforeEach(async ({ page }) => {
-    await withMockReport(page, mockReport, '/report?sessionId=s1')
+    await withMockReport(page, mockReport, '/#/report?sessionId=s1')
   })
 
   test('报告加载后显示综合得分', async ({ page }) => {
@@ -75,12 +75,12 @@ test.describe('ReportPage E2E', () => {
     await expect(page.getByText('82')).toBeVisible()
   })
 
+})
+
+test.describe('ReportPage E2E - 无数据', () => {
   test('无 sessionId 时显示"暂无报告数据"', async ({ page }) => {
     await applyInitScript(page)
-    await page.addInitScript(() => {
-      ;(window as any).__mockOverrides.getReport = async () => null
-    })
-    await page.goto('/report')
+    await page.goto('/#/report')
     await expect(page.getByText('暂无报告数据')).toBeVisible()
   })
 })

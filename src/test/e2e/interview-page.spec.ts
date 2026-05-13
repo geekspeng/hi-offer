@@ -9,7 +9,7 @@ import { applyInitScript, triggerState, triggerTurn } from './e2e-setup'
 test.describe('InterviewPage E2E', () => {
   test.beforeEach(async ({ page }) => {
     await applyInitScript(page)
-    await page.goto('/interview')
+    await page.goto('/#/interview')
   })
 
   test('初始显示倒计时（默认 state）', async ({ page }) => {
