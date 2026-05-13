@@ -134,13 +134,13 @@ export function buildReportPrompt(
       (e, i) =>
         `第${i + 1}题评估：
 - 得分：${e.score}/10
-- 技术深度：${e.dimensions.technical_depth}/10
-- 逻辑清晰度：${e.dimensions.logical_clarity}/10
-- 沟通表达：${e.dimensions.communication}/10
-- 问题解决：${e.dimensions.problem_solving}/10
-- 优点：${e.strengths.join('、')}
-- 不足：${e.weaknesses.join('、')}
-- 追问建议：${e.suggested_follow_up}`
+- 技术深度：${e.dimensions?.technical_depth ?? 'N/A'}/10
+- 逻辑清晰度：${e.dimensions?.logical_clarity ?? 'N/A'}/10
+- 沟通表达：${e.dimensions?.communication ?? 'N/A'}/10
+- 问题解决：${e.dimensions?.problem_solving ?? 'N/A'}/10
+- 优点：${(e.strengths ?? []).join('、')}
+- 不足：${(e.weaknesses ?? []).join('、')}
+- 追问建议：${e.suggested_follow_up ?? ''}`
     )
     .join('\n\n')
 

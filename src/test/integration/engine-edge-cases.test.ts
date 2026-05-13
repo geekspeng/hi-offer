@@ -163,7 +163,7 @@ describe('Engine edge cases', () => {
     expect(report!.suggestions).toEqual([])
   })
 
-  it('empty evaluation does not crash engine (report generation fails gracefully)', async () => {
+  it('empty evaluation does not crash engine (report generation handles missing dimensions gracefully)', async () => {
     const sessionId = sessionRepo.create(defaultConfig)
     sessionRepo.updateStatus(sessionId, 'running', Date.now())
 
@@ -184,10 +184,12 @@ describe('Engine edge cases', () => {
     engine.onUserFinishedSpeaking('partial answer')
     await new Promise((r) => setTimeout(r, 300))
 
-    // Report may fail to generate (buildReportPrompt expects evaluation.dimensions),
-    // but the engine should not crash. Turns are still saved.
+    // With the buildReportPrompt fix, empty dimensions are handled gracefully
     const turns = turnRepo.getBySessionId(sessionId)
     expect(turns.length).toBeGreaterThanOrEqual(2)
+    const report = reportRepo.getBySessionId(sessionId)
+    expect(report).not.toBeNull()
+    expect(report!.overallScore).toBe(0)
   })
 
   it('IPC state events contain correct phase transitions', async () => {

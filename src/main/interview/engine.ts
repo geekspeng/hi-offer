@@ -189,6 +189,7 @@ export class InterviewEngine {
 
   private async generateClosingAndReport(): Promise<void> {
     if (!this.sm) return
+    if (this.sm.context.phase !== 'closing') return
 
     const ctx = this.sm.context
 
