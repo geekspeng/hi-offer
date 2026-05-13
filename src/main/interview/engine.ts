@@ -118,11 +118,12 @@ export class InterviewEngine {
 
   stop(): void {
     if (!this.sm) return
-    this.isGeneratingClosingReport = false
 
     this.sm.transition({ type: 'USER_STOP' })
     this.clearTimer()
     this.sendState()
+
+    if (this.isGeneratingClosingReport) return
 
     this.generateClosingAndReport().catch((err) => {
       console.error('[InterviewEngine] Closing/report error:', err)
