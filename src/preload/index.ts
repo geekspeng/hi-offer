@@ -37,7 +37,10 @@ const api = {
   setConfig: (config: LLMConfig) => ipcRenderer.invoke('config:set', config),
 
   // LLM
-  testLLM: () => ipcRenderer.invoke('llm:test') as Promise<{ success: boolean; error?: string }>
+  testLLM: () => ipcRenderer.invoke('llm:test') as Promise<{ success: boolean; error?: string }>,
+
+  // Test helpers (safe in production — only called by E2E tests)
+  testUserFinishedSpeaking: (text: string) => ipcRenderer.invoke('test:userFinishedSpeaking', text)
 }
 
 contextBridge.exposeInMainWorld('api', api)

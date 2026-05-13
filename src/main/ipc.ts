@@ -93,6 +93,11 @@ export function registerIPC(win: BrowserWindow): void {
       return { success: false, error: err?.message ?? '连接失败' }
     }
   })
+
+  // === Test Helpers (safe in production — only called by tests) ===
+  ipcMain.handle('test:userFinishedSpeaking', async (_event, text: string) => {
+    if (engine) engine.onUserFinishedSpeaking(text)
+  })
 }
 
 export async function cleanupIPC(): Promise<void> {

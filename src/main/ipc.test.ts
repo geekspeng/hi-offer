@@ -77,9 +77,9 @@ describe('registerIPC', () => {
     expect(channels).toContain('config:set')
   })
 
-  it('registers exactly 10 handlers', () => {
+  it('registers exactly 11 handlers', () => {
     registerIPC(mockWin)
-    expect(vi.mocked(ipcMain.handle)).toHaveBeenCalledTimes(10)
+    expect(vi.mocked(ipcMain.handle)).toHaveBeenCalledTimes(11)
   })
 })
 
