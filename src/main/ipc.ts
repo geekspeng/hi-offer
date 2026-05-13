@@ -23,7 +23,10 @@ export function registerIPC(win: BrowserWindow): void {
     const reportRepo = new ReportRepository(db)
     engine = new InterviewEngine(
       llm, win,
-      (turn: Turn) => turnRepo.add(turn),
+      (turn: Turn) => {
+        turnRepo.add(turn)
+        win.webContents.send('interview:turn', turn)
+      },
       (report: Report) => reportRepo.save(report)
     )
     await engine.start(config, sessionId)

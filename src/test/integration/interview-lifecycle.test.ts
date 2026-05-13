@@ -214,6 +214,35 @@ describe('面试生命周期集成测试', () => {
     expect(report!.overallScore).toBe(75)
   })
 
+  it('engine start 发送 interview:turn 事件到渲染进程', async () => {
+    const sessionId = sessionRepo.create(defaultConfig)
+    sessionRepo.updateStatus(sessionId, 'running', Date.now())
+
+    const llmHelper = createSequenceLLM()
+    llmHelper.enqueueChat('欢迎参加面试')
+    llmHelper.enqueueChat('什么是闭包？')
+    llmHelper.enqueueJSON({ score: 7, dimensions: { technical_depth: 7, logical_clarity: 8, communication: 7, problem_solving: 6 }, strengths: [], weaknesses: [], suggested_follow_up: '' })
+    llmHelper.enqueueJSON(reportData)
+
+    // onTurnSaved 同时保存到 DB 并转发到 renderer
+    const engine = new InterviewEngine(
+      llmHelper.createBackend(), mockWin,
+      (turn) => {
+        turnRepo.add(turn)
+        mockWin.webContents.send('interview:turn', turn)
+      },
+      (report) => reportRepo.save(report)
+    )
+
+    await engine.start(defaultConfig, sessionId)
+
+    // 验证 turn 事件被转发到渲染进程
+    const turnCalls = mockSend.mock.calls.filter((c: any[]) => c[0] === 'interview:turn')
+    expect(turnCalls.length).toBeGreaterThanOrEqual(2) // intro turn + question turn
+    const turnRoles = turnCalls.map((c: any[]) => c[1].role)
+    expect(turnRoles).toContain('ai')
+  })
+
   it('AI 流式文本 → 每个字符触发一次 ai-chunk 推送', async () => {
     const sessionId = sessionRepo.create(defaultConfig)
     sessionRepo.updateStatus(sessionId, 'running', Date.now())
