@@ -10,6 +10,7 @@ describe('InterviewPage', () => {
   const onStop = vi.fn()
   let unsubState: ReturnType<typeof vi.fn>
   let unsubTurn: ReturnType<typeof vi.fn>
+  let unsubAiChunk: ReturnType<typeof vi.fn>
   let stateCallback: (state: any) => void
   let turnCallback: (turn: any) => void
 
@@ -18,6 +19,7 @@ describe('InterviewPage', () => {
     cleanup()
     unsubState = vi.fn()
     unsubTurn = vi.fn()
+    unsubAiChunk = vi.fn()
 
     vi.mocked(window.api.onInterviewState).mockImplementation((cb) => {
       stateCallback = cb
@@ -26,6 +28,9 @@ describe('InterviewPage', () => {
     vi.mocked(window.api.onTurn).mockImplementation((cb) => {
       turnCallback = cb
       return unsubTurn
+    })
+    vi.mocked(window.api.onAiChunk).mockImplementation(() => {
+      return unsubAiChunk
     })
   })
 

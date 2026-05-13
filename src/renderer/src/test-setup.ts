@@ -11,6 +11,7 @@ if (typeof window !== 'undefined') {
     stopInterview: vi.fn(),
     onInterviewState: vi.fn(() => () => {}),
     onTurn: vi.fn(() => () => {}),
+    onAiChunk: vi.fn(() => () => {}),
     getReport: vi.fn(),
     getSessions: vi.fn(),
     checkServices: vi.fn(),
