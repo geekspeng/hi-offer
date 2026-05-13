@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { HashRouter, Routes, Route, NavLink, useNavigate } from 'react-router-dom'
 import SetupPage from './pages/SetupPage'
 import InterviewPage from './pages/InterviewPage'
@@ -8,15 +8,21 @@ import './styles.css'
 
 function AppRoutes(): JSX.Element {
   const navigate = useNavigate()
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
 
-  const handleStartInterview = useCallback(() => {
+  const handleStartInterview = useCallback((sessionId?: string) => {
+    if (sessionId) setCurrentSessionId(sessionId)
     navigate('/interview')
   }, [navigate])
 
   const handleStopInterview = useCallback(async () => {
     await window.api.stopInterview()
-    navigate('/report')
-  }, [navigate])
+    if (currentSessionId) {
+      navigate(`/report?sessionId=${currentSessionId}`)
+    } else {
+      navigate('/report')
+    }
+  }, [navigate, currentSessionId])
 
   return (
     <div className="app-layout">

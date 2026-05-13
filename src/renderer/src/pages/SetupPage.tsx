@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { JobId, Difficulty, InterviewConfig } from '../../../shared/types'
 
 interface Props {
-  onStart: () => void
+  onStart: (sessionId?: string) => void
 }
 
 const JOBS: { id: JobId; label: string }[] = [
@@ -47,8 +47,11 @@ export default function SetupPage({ onStart }: Props) {
       duration,
       questionCount
     }
-    await window.api.startInterview(config)
+    // Navigate first so InterviewPage mounts and subscribes to IPC events
     onStart()
+    const sessionId = await window.api.startInterview(config)
+    // Pass sessionId for report navigation
+    if (sessionId) onStart(sessionId)
   }
 
   const selectedStyle: React.CSSProperties = {

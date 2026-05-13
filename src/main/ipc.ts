@@ -30,6 +30,7 @@ export function registerIPC(win: BrowserWindow): void {
       (report: Report) => reportRepo.save(report)
     )
     await engine.start(config, sessionId)
+    return sessionId
   })
 
   ipcMain.handle('interview:stop', async () => {
