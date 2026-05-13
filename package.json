@@ -8,7 +8,8 @@
     "build": "electron-vite build",
     "build:mac": "npm run build && electron-builder --mac",
     "build:win": "npm run build && electron-builder --win",
-    "test": "vitest run && npx playwright test",
+    "test": "vitest run && npx playwright test && npx playwright test --config=playwright.electron.config.ts",
+    "test:e2e:electron": "npm run build && npx playwright test --config=playwright.electron.config.ts",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.{ts,tsx}\""
