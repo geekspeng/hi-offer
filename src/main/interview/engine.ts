@@ -21,6 +21,7 @@ export class InterviewEngine {
   private win: BrowserWindow
   private onTurnSaved: (turn: Turn) => void
   private onReportSaved: (report: Report) => void
+  private isGeneratingClosingReport = false
 
   constructor(
     llm: LLMBackend,
@@ -117,6 +118,7 @@ export class InterviewEngine {
 
   stop(): void {
     if (!this.sm) return
+    this.isGeneratingClosingReport = false
 
     this.sm.transition({ type: 'USER_STOP' })
     this.clearTimer()
@@ -190,6 +192,8 @@ export class InterviewEngine {
   private async generateClosingAndReport(): Promise<void> {
     if (!this.sm) return
     if (this.sm.context.phase !== 'closing') return
+    if (this.isGeneratingClosingReport) return
+    this.isGeneratingClosingReport = true
 
     const ctx = this.sm.context
 
@@ -214,6 +218,7 @@ export class InterviewEngine {
 
     // Generate report
     await this.generateReport()
+    this.isGeneratingClosingReport = false
   }
 
   private async generateReport(): Promise<void> {
