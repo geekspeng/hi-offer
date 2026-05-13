@@ -39,13 +39,6 @@ export default function InterviewPage({ onStop }: InterviewPageProps) {
       setRemainingSeconds(state.remainingSeconds)
       setCurrentIndex(state.currentQuestionIndex)
       setTotalQuestions(state.totalQuestions)
-
-      // Update streaming text for AI speaking phase
-      if (state.phase === 'ai-speaking' && state.currentAiText) {
-        setStreamingText(state.currentAiText)
-      } else {
-        setStreamingText('')
-      }
     })
 
     const unsubTurn = window.api.onTurn((turn) => {
@@ -53,9 +46,14 @@ export default function InterviewPage({ onStop }: InterviewPageProps) {
       setStreamingText('')
     })
 
+    const unsubAiChunk = window.api.onAiChunk((text) => {
+      setStreamingText((prev) => prev + text)
+    })
+
     return () => {
       unsubState()
       unsubTurn()
+      unsubAiChunk()
     }
   }, [])
 

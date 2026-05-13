@@ -17,6 +17,11 @@ const api = {
     ipcRenderer.on('interview:turn', listener)
     return () => ipcRenderer.removeListener('interview:turn', listener)
   },
+  onAiChunk: (callback: (text: string) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, text: string) => callback(text)
+    ipcRenderer.on('interview:ai-chunk', listener)
+    return () => ipcRenderer.removeListener('interview:ai-chunk', listener)
+  },
 
   // Report & sessions
   getReport: (sessionId: string) => ipcRenderer.invoke('report:get', sessionId) as Promise<Report | null>,
